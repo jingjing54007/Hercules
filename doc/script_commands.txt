@@ -179,7 +179,7 @@ on-touch NPC, the player who triggers the script must be within 'trigger'
 range for the event to work.
 
 There are two optional fields for monster size and AI. Size can be 0 
-(medium), 1 (small), or 2 (big). AI can be 0 (default), 1 
+(SZ_MEDIUM), 1 (SZ_SMALL), or 2 (SZ_BIG). AI can be 0 (default), 1 
 (attack/friendly), 2 (sphere), 3 (flora), or 4 (zanzou).
 
 Alternately, a monster spawned using 'boss_monster' instead of 'monster' is able to be 
@@ -5912,9 +5912,9 @@ the label given. The RID of the player attached at this execution will be
 the RID of the killing character.
 
 <size> can be:
-	0 = medium (default)
-	1 = small
-	2 = big
+	0 = SZ_MEDIUM (default)
+	1 = SZ_SMALL
+	2 = SZ_BIG
 	
 <ai> can be:
 	0 = none (default)
@@ -6351,7 +6351,7 @@ the message to complete the effect.
 
 Changes the display name and/or display class of the target NPC.
 Returns 0 is successful, 1 if the NPC does not exist.
-Size is 0 = normal 1 = small 2 = big.
+Size is 0 = SZ_MEDIUM, 1 = SZ_SMALL, 2 = SZ_BIG.
 
 ---------------------------------------
 //=====================================
