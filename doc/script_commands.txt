@@ -6242,11 +6242,11 @@ the RID of the killing character.
 	Size_Large = big
 
 <ai> can be:
-	0 = none (default)
-	1 = attack/friendly
-	2 = sphere (Alchemist skill)
-	3 = flora (Alchemist skill)
-	4 = zanzou (Kagerou/Oboro skill)
+	AI_NONE   = none (default)
+	AI_ATTACK = attack/friendly
+	AI_SPHERE = sphere (Alchemist skill)
+	AI_FLORA  = flora (Alchemist skill)
+	AI_ZANZOU = zanzou (Kagerou/Oboro skill)
 
 	monster("place", 60, 100, "Poring", PORING, 1, "NPCNAME::OnLabel");
 
