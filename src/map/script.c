@@ -18309,7 +18309,7 @@ BUILDIN(setunitdata)
 		setunitdata_check_bounds(5, 0, MAX_MAP_SIZE/2);
 		break;
 	case UDT_SPEED:
-		setunitdata_check_bounds(4, 0, MAX_WALK_SPEED);
+		setunitdata_check_bounds(4, MIN_WALK_SPEED, MAX_WALK_SPEED);
 		break;
 	case UDT_MODE:
 		setunitdata_check_bounds(4, MD_NONE, MD_MASK);
@@ -18384,6 +18384,11 @@ BUILDIN(setunitdata)
 		struct mob_data *md = BL_UCAST(BL_MOB, bl);
 		nullpo_retr(false, md);
 
+		if (!md->base_status) {
+			md->base_status = (struct status_data*)aCalloc(1, sizeof(struct status_data));
+			memcpy(md->base_status, &md->db->status, sizeof(struct status_data));
+		}
+
 		switch (type)
 		{
 		case UDT_SIZE:
@@ -18417,8 +18422,8 @@ BUILDIN(setunitdata)
 				unit->movepos(bl, (short) val, (short) val2, 0, 0);
 			break;
 		case UDT_SPEED:
-			md->status.speed = (unsigned short) val;
-			status->calc_misc(bl, &md->status, md->level);
+			md->base_status->speed = (unsigned short) val;
+			status_calc_bl(&md->bl, SCB_SPEED);
 			break;
 		case UDT_MODE:
 			md->status.mode = (enum e_mode) val;

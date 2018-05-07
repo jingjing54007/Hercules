@@ -9831,7 +9831,7 @@ Applicable Data Types (available as constants) -
 	UDT_MAXSP:          MAX SP
 	UDT_MASTERAID:      Master Account ID (for Summons)
 	UDT_MASTERCID:      Master Char ID (for Summons)
-	UDT_SPEED:          Unit Speed.
+	UDT_SPEED:          Unit Speed. 20 - Slowest, 1000 - Fastest
 	UDT_MODE:           Mode (Mobs only)
 	UDT_AI:             Unit AI Type (see constants.conf for Unit AI Types)
 	UDT_SCOPTION:       Status Options. (see constants.conf for Unit Option Types)
