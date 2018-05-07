@@ -18274,7 +18274,7 @@ BUILDIN(setunitdata)
 	case UDT_MASTERAID:
 		setunitdata_check_min(4, 0);
 		tsd = map->id2sd(val);
-		if (tsd == NULL) {
+		if (tsd == NULL && bl->type != BL_MOB) {
 			ShowWarning("buildin_setunitdata: Account ID %d not found for master change!\n",val);
 			script_pushint(st, 0);
 			return false;
@@ -19335,6 +19335,7 @@ BUILDIN(getunitdata)
 		case UDT_MAXHP:       script_pushint(st, md->status.max_hp); break;
 		case UDT_SP:          script_pushint(st, md->status.sp); break;
 		case UDT_MAXSP:       script_pushint(st, md->status.max_sp); break;
+		case UDT_MASTERAID:   script_pushint(st, md->master_id); break;
 		case UDT_MAPIDXY:
 			getunitdata_sub(0, md->bl.m);
 			getunitdata_sub(1, md->bl.x);
