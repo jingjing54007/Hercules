@@ -18468,7 +18468,7 @@ BUILDIN(setunitdata)
 			unit->setdir(bl, (uint8) val);
 			break;
 		case UDT_CANMOVETICK:
-			md->ud.canmove_tick = val;
+			md->ud.canmove_tick = timer->gettick() + val;
 			break;
 		case UDT_STR:
 			md->status.str = (unsigned short) val;
@@ -18597,7 +18597,7 @@ BUILDIN(setunitdata)
 			unit->setdir(bl, (unsigned char) val);
 			break;
 		case UDT_CANMOVETICK:
-			hd->ud.canmove_tick = val;
+			hd->ud.canmove_tick = timer->gettick() + val;
 			break;
 		case UDT_STR:
 			hd->base_status.str = (unsigned short) val;
@@ -18736,7 +18736,7 @@ BUILDIN(setunitdata)
 			unit->setdir(bl, (unsigned char) val);
 			break;
 		case UDT_CANMOVETICK:
-			pd->ud.canmove_tick = val;
+			pd->ud.canmove_tick = timer->gettick() + val;
 			break;
 		case UDT_STR:
 			pd->status.str = (unsigned short) val;
@@ -18869,7 +18869,7 @@ BUILDIN(setunitdata)
 			unit->setdir(bl, (unsigned char) val);
 			break;
 		case UDT_CANMOVETICK:
-			mc->ud.canmove_tick = val;
+			mc->ud.canmove_tick = timer->gettick() + val;
 			break;
 		case UDT_STR:
 			mc->base_status.str = (unsigned short) val;
@@ -19003,7 +19003,7 @@ BUILDIN(setunitdata)
 			unit->setdir(bl, (unsigned char) val);
 			break;
 		case UDT_CANMOVETICK:
-			ed->ud.canmove_tick = val;
+			ed->ud.canmove_tick = timer->gettick() + val;
 			break;
 		case UDT_STR:
 			ed->base_status.str = (unsigned short) val;
@@ -19356,7 +19356,6 @@ BUILDIN(getunitdata)
 		case UDT_SHIELD:      script_pushint(st, md->vd->shield); break;
 		case UDT_WEAPON:      script_pushint(st, md->vd->weapon); break;
 		case UDT_LOOKDIR:     script_pushint(st, md->ud.dir); break;
-		case UDT_CANMOVETICK: script_pushint(st, md->ud.canmove_tick); break;
 		case UDT_STR:         script_pushint(st, md->status.str); break;
 		case UDT_AGI:         script_pushint(st, md->status.agi); break;
 		case UDT_VIT:         script_pushint(st, md->status.vit); break;
@@ -19409,7 +19408,6 @@ BUILDIN(getunitdata)
 			break;
 		case UDT_SPEED:       script_pushint(st, hd->base_status.speed); break;
 		case UDT_LOOKDIR:     script_pushint(st, hd->ud.dir); break;
-		case UDT_CANMOVETICK: script_pushint(st, hd->ud.canmove_tick); break;
 		case UDT_MODE:        script_pushint(st, hd->base_status.mode); break;
 		case UDT_STR:         script_pushint(st, hd->base_status.str); break;
 		case UDT_AGI:         script_pushint(st, hd->base_status.agi); break;
@@ -19466,7 +19464,6 @@ BUILDIN(getunitdata)
 			break;
 		case UDT_SPEED:       script_pushint(st, pd->status.speed); break;
 		case UDT_LOOKDIR:     script_pushint(st, pd->ud.dir); break;
-		case UDT_CANMOVETICK: script_pushint(st, pd->ud.canmove_tick); break;
 		case UDT_MODE:        script_pushint(st, pd->status.mode); break;
 		case UDT_STR:         script_pushint(st, pd->status.str); break;
 		case UDT_AGI:         script_pushint(st, pd->status.agi); break;
@@ -19522,7 +19519,6 @@ BUILDIN(getunitdata)
 			break;
 		case UDT_SPEED:       script_pushint(st, mc->base_status.speed); break;
 		case UDT_LOOKDIR:     script_pushint(st, mc->ud.dir); break;
-		case UDT_CANMOVETICK: script_pushint(st, mc->ud.canmove_tick); break;
 		case UDT_MODE:        script_pushint(st, mc->base_status.mode); break;
 		case UDT_STR:         script_pushint(st, mc->base_status.str); break;
 		case UDT_AGI:         script_pushint(st, mc->base_status.agi); break;
@@ -19578,7 +19574,6 @@ BUILDIN(getunitdata)
 			break;
 		case UDT_SPEED:       script_pushint(st, ed->base_status.speed); break;
 		case UDT_LOOKDIR:     script_pushint(st, ed->ud.dir); break;
-		case UDT_CANMOVETICK: script_pushint(st, ed->ud.canmove_tick); break;
 		case UDT_MODE:        script_pushint(st, ed->base_status.mode); break;
 		case UDT_STR:         script_pushint(st, ed->base_status.str); break;
 		case UDT_AGI:         script_pushint(st, ed->base_status.agi); break;
@@ -19632,7 +19627,6 @@ BUILDIN(getunitdata)
 			break;
 		case UDT_SPEED:       script_pushint(st, nd->status.speed); break;
 		case UDT_LOOKDIR:     script_pushint(st, nd->ud->dir); break;
-		case UDT_CANMOVETICK: script_pushint(st, nd->ud->canmove_tick); break;
 		case UDT_MODE:        script_pushint(st, nd->status.mode); break;
 		case UDT_STR:         script_pushint(st, nd->status.str); break;
 		case UDT_AGI:         script_pushint(st, nd->status.agi); break;

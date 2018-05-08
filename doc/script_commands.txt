@@ -9846,7 +9846,7 @@ Applicable Data Types (available as constants) -
 	UDT_SHIELD:         Shield Sprite ID.
 	UDT_WEAPON:         Weapon Sprite ID.
 	UDT_LOOKDIR:        Face direction.
-	UDT_CANMOVETICK:    Stop a unit from move for n seconds.
+	UDT_CANMOVETICK:    Stop a unit from moving for n mili-seconds.
 	UDT_STR:            Unit STR.
 	UDT_AGI:            Unit AGI.
 	UDT_VIT:            Unit VIT.
@@ -9909,7 +9909,6 @@ Applicable Data types (available as constants) -
 	UDT_SHIELD:         Shield Sprite ID.
 	UDT_WEAPON:         Weapon Sprite ID.
 	UDT_LOOKDIR:        Face direction.
-	UDT_CANMOVETICK:    Stop a unit from move for n seconds.
 	UDT_STR:            Unit STR.
 	UDT_AGI:            Unit AGI.
 	UDT_VIT:            Unit VIT.
