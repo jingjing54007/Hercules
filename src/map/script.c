@@ -18269,6 +18269,8 @@ BUILDIN(setunitdata)
 	case UDT_MERC_KILLCOUNT:
 	case UDT_ROBE:
 	case UDT_BODY2:
+	case UDT_CANMOVETICK:
+	case UDT_CANACTTICK:
 		setunitdata_check_min(4, 0);
 		break;
 	case UDT_MASTERAID:
@@ -18331,9 +18333,6 @@ BUILDIN(setunitdata)
 		break;
 	case UDT_LOOKDIR:
 		setunitdata_check_bounds(4, 0, 7);
-		break;
-	case UDT_CANMOVETICK:
-		setunitdata_check_min(4, 0);
 		break;
 	case UDT_STR:
 	case UDT_AGI:
@@ -18470,6 +18469,9 @@ BUILDIN(setunitdata)
 		case UDT_CANMOVETICK:
 			md->ud.canmove_tick = timer->gettick() + val;
 			break;
+		case UDT_CANACTTICK:
+			md->ud.canact_tick = timer->gettick() + val;
+			break;
 		case UDT_STR:
 			md->status.str = (unsigned short) val;
 			status->calc_misc(bl, &md->status, md->level);
@@ -18598,6 +18600,9 @@ BUILDIN(setunitdata)
 			break;
 		case UDT_CANMOVETICK:
 			hd->ud.canmove_tick = timer->gettick() + val;
+			break;
+		case UDT_CANACTTICK:
+			hd->ud.canact_tick = timer->gettick() + val;
 			break;
 		case UDT_STR:
 			hd->base_status.str = (unsigned short) val;
@@ -18738,6 +18743,9 @@ BUILDIN(setunitdata)
 		case UDT_CANMOVETICK:
 			pd->ud.canmove_tick = timer->gettick() + val;
 			break;
+		case UDT_CANACTTICK:
+			pd->ud.canact_tick = timer->gettick() + val;
+			break;
 		case UDT_STR:
 			pd->status.str = (unsigned short) val;
 			status->calc_misc(bl, &pd->status, pd->pet.level);
@@ -18870,6 +18878,9 @@ BUILDIN(setunitdata)
 			break;
 		case UDT_CANMOVETICK:
 			mc->ud.canmove_tick = timer->gettick() + val;
+			break;
+		case UDT_CANACTTICK:
+			mc->ud.canact_tick = timer->gettick() + val;
 			break;
 		case UDT_STR:
 			mc->base_status.str = (unsigned short) val;
@@ -19004,6 +19015,9 @@ BUILDIN(setunitdata)
 			break;
 		case UDT_CANMOVETICK:
 			ed->ud.canmove_tick = timer->gettick() + val;
+			break;
+		case UDT_CANACTTICK:
+			ed->ud.canact_tick = timer->gettick() + val;
 			break;
 		case UDT_STR:
 			ed->base_status.str = (unsigned short) val;
