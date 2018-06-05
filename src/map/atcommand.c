@@ -10097,7 +10097,7 @@ bool atcommand_exec(const int fd, struct map_session_data *sd, const char *messa
 			return false;
 		}
 	}
-	if (sd->block_action.commands) // *pcblock script command
+	if (sd->block_action.commands && player_invoked) // *pcblock script command
 		return false;
 
 	if (*message == atcommand->char_symbol)
