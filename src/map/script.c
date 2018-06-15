@@ -6626,8 +6626,8 @@ BUILDIN(areawarp)
 		}
 	}
 
-	if( (m = map->mapname2mapid(mapname)) < 0 )
-		return true;
+	if ((m = script->mapname2mapid(st, mapname)) < 0)
+		return false;
 
 	if( strcmp(str,"Random") == 0 )
 		index = 0;
@@ -6668,8 +6668,8 @@ BUILDIN(areapercentheal) {
 	hp=script_getnum(st,7);
 	sp=script_getnum(st,8);
 
-	if( (m=map->mapname2mapid(mapname))< 0)
-		return true;
+	if ((m = script->mapname2mapid(st, mapname)) < 0)
+		return false;
 
 	map->foreachinarea(script->buildin_areapercentheal_sub,m,x0,y0,x1,y1,BL_PC,hp,sp);
 	return true;
@@ -6820,7 +6820,9 @@ BUILDIN(warpguild)
 	int gid          = script_getnum(st, 5);
 
 	if (script_hasdata(st, 6)) {
-		map_id = map->mapname2mapid(script_getstr(st, 6));
+		map_id = script->mapname2mapid(st, script_getstr(st, 6));
+		if (map_id < 0)
+			return false;
 	}
 
 	g = guild->search(gid);
@@ -8217,12 +8219,10 @@ BUILDIN(makeitem)
 			return true; //Failed...
 		m=sd->bl.m;
 	} else
-		m=map->mapname2mapid(mapname);
+		m = script->mapname2mapid(st, mapname);
 
-	if( m == -1 ) {
-		ShowError("makeitem: creating map on unexistent map '%s'!\n", mapname);
+	if (m == -1)
 		return false;
-	}
 
 	memset(&item_tmp,0,sizeof(item_tmp));
 	item_tmp.nameid = nameid;
@@ -8260,7 +8260,7 @@ BUILDIN(makeitem2)
 	}
 
 	if (script_hasdata(st, 11)) {
-		m = map->mapname2mapid(script_getstr(st, 11));
+		m = script->mapname2mapid(st, script_getstr(st, 11));
 	} else {
 		sd = script->rid2sd(st);
 		if (sd == NULL)
@@ -8268,10 +8268,8 @@ BUILDIN(makeitem2)
 		m = sd->bl.m;
 	}
 
-	if (m == -1) {
-		ShowError("makeitem2: Nonexistant map requested.\n");
-		return true;
-	}
+	if (m == -1)
+		return false;
 
 	x = (script_hasdata(st, 12) ? script_getnum(st, 12) : 0);
 	y = (script_hasdata(st, 13) ? script_getnum(st, 13) : 0);
@@ -10736,10 +10734,8 @@ BUILDIN(monster)
 	if (sd && strcmp(mapn, "this") == 0)
 		m = sd->bl.m;
 	else {
-		if ( ( m = map->mapname2mapid(mapn) ) == -1 ) {
-			ShowWarning("buildin_monster: Attempted to spawn monster class %d on non-existing map '%s'\n",class_, mapn);
+		if ((m = script->mapname2mapid(st, mapn)) == -1)
 			return false;
-		}
 
 		if (map->list[m].flag.src4instance && st->instance_id >= 0) { // Try to redirect to the instance map, not the src map
 			if ((m = instance->mapid2imapid(m, st->instance_id)) < 0) {
@@ -10834,10 +10830,9 @@ BUILDIN(areamonster) {
 	if (sd && strcmp(mapn, "this") == 0)
 		m = sd->bl.m;
 	else {
-		if ( ( m = map->mapname2mapid(mapn) ) == -1 ) {
-			ShowWarning("buildin_areamonster: Attempted to spawn monster class %d on non-existing map '%s'\n",class_, mapn);
+		if ((m = script->mapname2mapid(st, mapn)) == -1)
 			return false;
-		}
+
 		if (map->list[m].flag.src4instance && st->instance_id >= 0) { // Try to redirect to the instance map, not the src map
 			if ((m = instance->mapid2imapid(m, st->instance_id)) < 0) {
 				ShowError("buildin_areamonster: Trying to spawn monster (%d) on instance map (%s) without instance attached.\n", class_, mapn);
@@ -10906,8 +10901,8 @@ BUILDIN(killmonster) {
 	else
 		script->check_event(st, event);
 
-	if( (m=map->mapname2mapid(mapname))<0 )
-		return true;
+	if ((m = script->mapname2mapid(st, mapname)) < 0)
+		return false;
 
 	if( map->list[m].flag.src4instance && st->instance_id >= 0 && (m = instance->mapid2imapid(m, st->instance_id)) < 0 )
 		return true;
@@ -10947,8 +10942,8 @@ BUILDIN(killmonsterall) {
 	int16 m;
 	mapname=script_getstr(st,2);
 
-	if( (m = map->mapname2mapid(mapname))<0 )
-		return true;
+	if ((m = script->mapname2mapid(st, mapname)) < 0)
+		return false;
 
 	if( map->list[m].flag.src4instance && st->instance_id >= 0 && (m = instance->mapid2imapid(m, st->instance_id)) < 0 )
 		return true;
@@ -10995,8 +10990,9 @@ BUILDIN(clone) {
 
 	script->check_event(st, event);
 
-	m = map->mapname2mapid(mapname);
-	if (m < 0) return true;
+	m = script->mapname2mapid(st, mapname);
+	if (m < 0)
+		return false;
 
 	sd = script->charid2sd(st, char_id);
 
@@ -11300,7 +11296,9 @@ BUILDIN(getunits)
 
 	if (script_hasdata(st, 5)) {
 		const char *mapname = script_getstr(st, 5);
-		int16 m = map->mapname2mapid(mapname);
+		int16 m = script->mapname2mapid(st, mapname);
+		if (m < 0)
+			return false;
 
 		if (script_hasdata(st, 9)) {
 			int16 x1 = script_getnum(st, 6);
@@ -11716,8 +11714,8 @@ BUILDIN(mapannounce)
 	size_t len = strlen(mes);
 	Assert_retr(false, len < INT_MAX);
 
-	if ((m = map->mapname2mapid(mapname)) < 0)
-		return true;
+	if ((m = script->mapname2mapid(st, mapname)) < 0)
+		return false;
 
 	map->foreachinmap(script->buildin_announce_sub, m, BL_PC,
 	                  mes, (int)len+1, flag&BC_COLOR_MASK, fontColor, fontType, fontSize, fontAlign, fontY);
@@ -11743,8 +11741,8 @@ BUILDIN(areaannounce)
 	size_t len = strlen(mes);
 	Assert_retr(false, len < INT_MAX);
 
-	if ((m = map->mapname2mapid(mapname)) < 0)
-		return true;
+	if ((m = script->mapname2mapid(st, mapname)) < 0)
+		return false;
 
 	map->foreachinarea(script->buildin_announce_sub, m, x0, y0, x1, y1, BL_PC,
 	                   mes, (int)len+1, flag&BC_COLOR_MASK, fontColor, fontType, fontSize, fontAlign, fontY);
@@ -11827,9 +11825,9 @@ BUILDIN(getmapguildusers)
 	struct guild *g = NULL;
 	str=script_getstr(st,2);
 	gid=script_getnum(st,3);
-	if ((m = map->mapname2mapid(str)) < 0) { // map id on this server (m == -1 if not in actual map-server)
+	if ((m = script->mapname2mapid(st, str)) < 0) { // map id on this server (m == -1 if not in actual map-server)
 		script_pushint(st,-1);
-		return true;
+		return false;
 	}
 	g = guild->search(gid);
 
@@ -11850,8 +11848,8 @@ BUILDIN(getmapusers) {
 	const char *str;
 	int16 m;
 	str=script_getstr(st,2);
-	if( (m=map->mapname2mapid(str))< 0) {
-		script_pushint(st,-1);
+	if ((m = map->mapname2mapid(str)) < 0) {
+		script_pushint(st, -1);
 		return true;
 	}
 	script_pushint(st,map->list[m].users);
@@ -11875,9 +11873,9 @@ BUILDIN(getareausers)
 
 	if (script_hasdata(st, 2) && script_isstringtype(st, 2)) {
 		const char *str = script_getstr(st, 2);
-		if ((m = map->mapname2mapid(str)) < 0) {
+		if ((m = script->mapname2mapid(st, str)) < 0) {
 			script_pushint(st, -1);
-			return true;
+			return false;
 		}
 		idx = 3;
 	} else {
@@ -11964,9 +11962,9 @@ BUILDIN(getareadropitem) {
 		item=script_getnum(st, 7);
 	}
 
-	if( (m=map->mapname2mapid(str))< 0) {
+	if ((m = script->mapname2mapid(st, str)) < 0) {
 		script_pushint(st,-1);
-		return true;
+		return false;
 	}
 	map->foreachinarea(script->buildin_getareadropitem_sub,
 	                   m,x0,y0,x1,y1,BL_ITEM,item,&amount);
@@ -12842,15 +12840,17 @@ BUILDIN(setmapflagnosave) {
 	str2=script_getstr(st,3);
 	x=script_getnum(st,4);
 	y=script_getnum(st,5);
-	m = map->mapname2mapid(str);
+	m = script->mapname2mapid(st, str);
 	map_index = script->mapindexname2id(st,str2);
 
-	if(m >= 0 && map_index) {
+	if (m >= 0 && map_index) {
 		map->list[m].flag.nosave=1;
 		map->list[m].save.map=map_index;
 		map->list[m].save.x=x;
 		map->list[m].save.y=y;
 	}
+	else
+		return false;
 
 	return true;
 }
@@ -12933,7 +12933,7 @@ BUILDIN(getmapflag)
 	str=script_getstr(st,2);
 	i=script_getnum(st,3);
 
-	m = map->mapname2mapid(str);
+	m = script->mapname2mapid(st, str);
 	if(m >= 0) {
 		switch(i) {
 			case MF_NOMEMO:             script_pushint(st,map->list[m].flag.nomemo); break;
@@ -12993,6 +12993,8 @@ BUILDIN(getmapflag)
 			case MF_PAIRSHIP_ENDABLE:   script_pushint(st, map->list[m].flag.pairship_endable); break;
 		}
 	}
+	else
+		return false;
 
 	return true;
 }
@@ -13038,7 +13040,7 @@ BUILDIN(setmapflag) {
 			return false;
 		}
 	}
-	m = map->mapname2mapid(str);
+	m = script->mapname2mapid(st, str);
 
 	if(m >= 0) {
 		switch(i) {
@@ -13121,6 +13123,8 @@ BUILDIN(setmapflag) {
 			case MF_PAIRSHIP_ENDABLE:   map->list[m].flag.pairship_endable = 1; break;
 		}
 	}
+	else
+		return false;
 
 	return true;
 }
@@ -13132,7 +13136,7 @@ BUILDIN(removemapflag) {
 	str=script_getstr(st,2);
 	i=script_getnum(st,3);
 
-	m = map->mapname2mapid(str);
+	m = script->mapname2mapid(st, str);
 	if(m >= 0) {
 		switch(i) {
 			case MF_NOMEMO:             map->list[m].flag.nomemo = 0; break;
@@ -13209,6 +13213,8 @@ BUILDIN(removemapflag) {
 			case MF_NOVIEWID:           map->list[m].flag.noviewid = EQP_NONE; break;
 		}
 	}
+	else
+		return false;
 
 	return true;
 }
@@ -13222,13 +13228,16 @@ BUILDIN(pvpon)
 	struct block_list bl;
 
 	str = script_getstr(st,2);
-	m = map->mapname2mapid(str);
-	if( m < 0 || map->list[m].flag.pvp )
+	m = script->mapname2mapid(st, str);
+	if (m < 0)
+		return false;
+
+	if (map->list[m].flag.pvp)
 		return true; // nothing to do
 
 	if( !strdb_exists(map->zone_db,MAP_ZONE_PVP_NAME) ) {
-		ShowError("buildin_pvpon: zone_db missing '%s'\n",MAP_ZONE_PVP_NAME);
-		return true;
+		ShowWarning("buildin_pvpon: zone_db missing '%s'\n",MAP_ZONE_PVP_NAME);
+		return false;
 	}
 
 	map->zone_change2(m, strdb_get(map->zone_db, MAP_ZONE_PVP_NAME));
@@ -13281,8 +13290,11 @@ BUILDIN(pvpoff) {
 	struct block_list bl;
 
 	str=script_getstr(st,2);
-	m = map->mapname2mapid(str);
-	if(m < 0 || !map->list[m].flag.pvp)
+	m = script->mapname2mapid(st, str);
+	if (m < 0)
+		return false;
+
+	if (!map->list[m].flag.pvp)
 		return true; //fixed Lupus
 
 	map->zone_change2(m, map->list[m].prev_zone);
@@ -13304,13 +13316,16 @@ BUILDIN(gvgon) {
 	const char *str;
 
 	str=script_getstr(st,2);
-	m = map->mapname2mapid(str);
-	if(m >= 0 && !map->list[m].flag.gvg) {
+	m = script->mapname2mapid(st, str);
+	if (m < 0)
+		return false;
+
+	if(!map->list[m].flag.gvg) {
 		struct block_list bl;
 
 		if( !strdb_exists(map->zone_db,MAP_ZONE_GVG_NAME) ) {
-			ShowError("buildin_gvgon: zone_db missing '%s'\n",MAP_ZONE_GVG_NAME);
-			return true;
+			ShowWarning("buildin_gvgon: zone_db missing '%s'\n",MAP_ZONE_GVG_NAME);
+			return false;
 		}
 
 		map->zone_change2(m, strdb_get(map->zone_db, MAP_ZONE_GVG_NAME));
@@ -13328,8 +13343,10 @@ BUILDIN(gvgoff) {
 	const char *str;
 
 	str=script_getstr(st,2);
-	m = map->mapname2mapid(str);
-	if(m >= 0 && map->list[m].flag.gvg) {
+	m = script->mapname2mapid(st, str);
+	if (m < 0)
+		return false;
+	if (map->list[m].flag.gvg) {
 		struct block_list bl;
 		map->zone_change2(m, map->list[m].prev_zone);
 		map->list[m].flag.gvg = 0;
@@ -13411,10 +13428,10 @@ BUILDIN(maprespawnguildid) {
 	int g_id=script_getnum(st,3);
 	int flag=script_getnum(st,4);
 
-	int16 m=map->mapname2mapid(mapname);
+	int16 m = script->mapname2mapid(st, mapname);
 
-	if(m == -1)
-		return true;
+	if (m == -1)
+		return false;
 
 	//Catch ALL players (in case some are 'between maps' on execution time)
 	map->foreachpc(script->buildin_maprespawnguildid_sub_pc,m,g_id,flag);
@@ -13759,8 +13776,8 @@ BUILDIN(mapwarp) {
 		check_ID=script_getnum(st,7);
 	}
 
-	if((m=map->mapname2mapid(mapname))< 0)
-		return true;
+	if ((m = script->mapname2mapid(st, mapname)) < 0)
+		return false;
 
 	if(!(index=script->mapindexname2id(st,str)))
 		return true;
@@ -13829,9 +13846,9 @@ BUILDIN(mobcount) {
 			return true;
 
 		m = sd->bl.m;
-	} else if( (m = map->mapname2mapid(mapname)) < 0 ) {
+	} else if ((m = script->mapname2mapid(st, mapname)) < 0) {
 		script_pushint(st,-1);
-		return true;
+		return false;
 	}
 
 	if( map->list[m].flag.src4instance && map->list[m].instance_id == -1 && st->instance_id >= 0 && (m = instance->mapid2imapid(m, st->instance_id)) < 0 ) {
@@ -14049,8 +14066,8 @@ BUILDIN(setwall) {
 	shootable = script_getnum(st,7);
 	name      = script_getstr(st,8);
 
-	if( (m = map->mapname2mapid(mapname)) < 0 )
-		return true; // Invalid Map
+	if ((m = script->mapname2mapid(st, mapname)) < 0)
+		return false; // Invalid Map
 
 	map->iwall_set(m, x, y, size, dir, shootable, name);
 	return true;
@@ -14855,10 +14872,8 @@ BUILDIN(playbgmall) {
 		int y1 = script_getnum(st,7);
 		int m;
 
-		if ( ( m = map->mapname2mapid(mapname) ) == -1 ) {
-			ShowWarning("playbgmall: Attempted to play song '%s' on non-existent map '%s'\n",name, mapname);
-			return true;
-		}
+		if ((m = script->mapname2mapid(st, mapname)) == -1)
+			return false;
 
 		map->foreachinarea(script->playbgm_sub, m, x0, y0, x1, y1, BL_PC, name);
 	} else if( script_hasdata(st,3) ) {
@@ -14866,10 +14881,8 @@ BUILDIN(playbgmall) {
 		const char* mapname = script_getstr(st,3);
 		int m;
 
-		if ( ( m = map->mapname2mapid(mapname) ) == -1 ) {
-			ShowWarning("playbgmall: Attempted to play song '%s' on non-existent map '%s'\n",name, mapname);
-			return true;
-		}
+		if ((m = script->mapname2mapid(st, mapname)) == -1)
+			return false;
 
 		map->foreachinmap(script->playbgm_sub, m, BL_PC, name);
 	} else {
@@ -14935,10 +14948,8 @@ BUILDIN(soundeffectall) {
 			const char *mapname = script_getstr(st,4);
 			int m;
 
-			if ( ( m = map->mapname2mapid(mapname) ) == -1 ) {
-				ShowWarning("soundeffectall: Attempted to play song '%s' (type %d) on non-existent map '%s'\n",name,type, mapname);
-				return true;
-			}
+			if ((m = script->mapname2mapid(st, mapname)) == -1)
+				return false;
 
 			map->foreachinmap(script->soundeffect_sub, m, BL_PC, name, type);
 		} else if(script_hasdata(st,8)) { // specified part of map
@@ -14949,10 +14960,8 @@ BUILDIN(soundeffectall) {
 			int y1 = script_getnum(st,8);
 			int m;
 
-			if ( ( m = map->mapname2mapid(mapname) ) == -1 ) {
-				ShowWarning("soundeffectall: Attempted to play song '%s' (type %d) on non-existent map '%s'\n",name,type, mapname);
-				return true;
-			}
+			if ((m = script->mapname2mapid(st, mapname)) == -1)
+				return false;
 
 			map->foreachinarea(script->soundeffect_sub, m, x0, y0, x1, y1, BL_PC, name, type);
 		} else {
@@ -15282,12 +15291,10 @@ BUILDIN(recovery)
 {
 	if (script_hasdata(st, 2)) {
 		if (script_isstringtype(st, 2)) {
-			int16 m = map->mapname2mapid(script_getstr(st, 2));
+			int16 m = script->mapname2mapid(st, script_getstr(st, 2));
 
-			if (m == -1) {
-				ShowWarning("script:recovery: invalid map!\n");
+			if (m == -1)
 				return false;
-			}
 
 			if (script_hasdata(st, 6)) {
 				int16 x1 = script_getnum(st, 3);
@@ -18422,10 +18429,8 @@ BUILDIN(setunitdata)
 		}
 		break;
 	case UDT_MAPIDXY:
-		if ((val = map->mapname2mapid(mapname)) == -1) {
-			ShowError("buildin_setunitdata: Non-existent map %s provided.\n", mapname);
+		if ((val = script->mapname2mapid(st, mapname)) == -1)
 			return false;
-		}
 		setunitdata_check_int(5);
 		setunitdata_check_int(6);
 		setunitdata_check_bounds(5, 0, MAX_MAP_SIZE/2);
@@ -19971,9 +19976,12 @@ BUILDIN(unitwarp) {
 	if( strcmp(mapname,"this") == 0 )
 		mapid = bl?bl->m:-1;
 	else
-		mapid = map->mapname2mapid(mapname);
+		mapid = script->mapname2mapid(st, mapname);
 
-	if( mapid >= 0 && bl != NULL ) {
+	if (mapid < 0)
+		return false;
+
+	if (bl != NULL) {
 		unit->bl2ud2(bl); // ensure ((struct npc_data *)bl)->ud is safe to edit
 		script_pushint(st, unit->warp(bl,mapid,x,y,CLR_OUTSIGHT));
 	} else {
@@ -20438,15 +20446,13 @@ BUILDIN(openauction)
 ///
 /// @see cell_chk* constants in const.txt for the types
 BUILDIN(checkcell) {
-	int16 m = map->mapname2mapid(script_getstr(st,2));
+	int16 m = script->mapname2mapid(st, script_getstr(st,2));
 	int16 x = script_getnum(st,3);
 	int16 y = script_getnum(st,4);
 	cell_chk type = (cell_chk)script_getnum(st,5);
 
-	if ( m == -1 ) {
-		ShowWarning("checkcell: Attempted to run on unexsitent map '%s', type %u, x/y %d,%d\n", script_getstr(st,2), type, x, y);
-		return true;
-	}
+	if (m == -1)
+		return false;
 
 	script_pushint(st, map->getcell(m, NULL, x, y, type));
 
@@ -20459,7 +20465,7 @@ BUILDIN(checkcell) {
 ///
 /// @see cell_* constants in const.txt for the types
 BUILDIN(setcell) {
-	int16 m = map->mapname2mapid(script_getstr(st,2));
+	int16 m = script->mapname2mapid(st, script_getstr(st,2));
 	int16 x1 = script_getnum(st,3);
 	int16 y1 = script_getnum(st,4);
 	int16 x2 = script_getnum(st,5);
@@ -20469,10 +20475,8 @@ BUILDIN(setcell) {
 
 	int x,y;
 
-	if ( m == -1 ) {
-		ShowWarning("setcell: Attempted to run on unexistent map '%s', type %u, x1/y1 - %d,%d | x2/y2 - %d,%d\n", script_getstr(st, 2), type, x1, y1, x2, y2);
-		return true;
-	}
+	if (m == -1)
+		return false;
 
 	if( x1 > x2 ) swap(x1,x2);
 	if( y1 > y2 ) swap(y1,y2);
@@ -21087,7 +21091,11 @@ BUILDIN(bg_getareausers)
 	bg_id = script_getnum(st,2);
 	str = script_getstr(st,3);
 
-	if( (bgd = bg->team_search(bg_id)) == NULL || (m = map->mapname2mapid(str)) < 0 ) {
+	if ((m = script->mapname2mapid(st, str)) < 0) {
+		script_pushint(st,0);
+		return false;
+	}
+	if ((bgd = bg->team_search(bg_id)) == NULL) {
 		script_pushint(st,0);
 		return true;
 	}
@@ -21116,8 +21124,8 @@ BUILDIN(bg_updatescore)
 	int16 m;
 
 	str = script_getstr(st,2);
-	if( (m = map->mapname2mapid(str)) < 0 )
-		return true;
+	if ((m = script->mapname2mapid(st, str)) < 0)
+		return false;
 
 	map->list[m].bgscore_lion = script_getnum(st,3);
 	map->list[m].bgscore_eagle = script_getnum(st,4);
@@ -21245,9 +21253,11 @@ BUILDIN(instance_detachmap) {
 		instance_id = st->instance_id;
 	else return true;
 
-	if( (m = map->mapname2mapid(str)) < 0 || (m = instance->map2imap(m,instance_id)) < 0 ) {
-		ShowError("buildin_instance_detachmap: Trying to detach invalid map %s\n", str);
-		return true;
+	if ((m = script->mapname2mapid(st, str)) < 0)
+		return false;
+	if ((m = instance->map2imap(m,instance_id)) < 0) {
+		ShowWarning("buildin_instance_detachmap: Trying to detach invalid map %s\n", str);
+		return false;
 	}
 
 	instance->del_map(m);
@@ -21375,13 +21385,13 @@ BUILDIN(has_instance)
 
 	str = script_getstr(st, 2);
 
-	if ((m = map->mapname2mapid(str)) < 0) {
-		if (type) {
+	if ((m = script->mapname2mapid(st, str)) < 0) {
+		if (type)
 			script_pushint(st, -1);
-		} else {
+		else
 			script_pushconststr(st, "");
-		}
-		return true;
+
+		return false;
 	}
 
 	if (script_hasdata(st, 3))
@@ -21492,7 +21502,9 @@ BUILDIN(instance_warpall)
 	else
 		return true;
 
-	if( (m = map->mapname2mapid(mapn)) < 0 || (map->list[m].flag.src4instance && (m = instance->mapid2imapid(m, instance_id)) < 0) )
+	if ((m = script->mapname2mapid(st, mapn)) < 0)
+		return false;
+	if ((map->list[m].flag.src4instance && (m = instance->mapid2imapid(m, instance_id)) < 0) )
 		return true;
 
 	map_index = map_id2index(m);
@@ -21692,10 +21704,8 @@ BUILDIN(areamobuseskill)
 	int16 m;
 	int range,mobid,skill_id,skill_lv,casttime,emotion,target,cancel;
 
-	if( (m = map->mapname2mapid(script_getstr(st,2))) < 0 ) {
-		ShowError("areamobuseskill: invalid map name.\n");
-		return true;
-	}
+	if ((m = script->mapname2mapid(st, script_getstr(st, 2))) < 0)
+		return false;
 
 	if( map->list[m].flag.src4instance && st->instance_id >= 0 && (m = instance->mapid2imapid(m, st->instance_id)) < 0 )
 		return true;
@@ -22385,9 +22395,9 @@ int script_cleanfloor_sub(struct block_list *bl, va_list ap)
 BUILDIN(cleanmap)
 {
 	const char *mapname = script_getstr(st, 2);
-	int16 m = map->mapname2mapid(mapname);
+	int16 m = script->mapname2mapid(st, mapname);
 
-	if ( m == -1 )
+	if (m == -1)
 		return false;
 
 	if ((script_lastdata(st) - 2) < 4) {
@@ -23224,9 +23234,9 @@ BUILDIN(instance_set_respawn)
 
 	if( instance_id == -1 || !instance->valid(instance_id) )
 		script_pushint(st, 0);
-	else if( (mid = map->mapname2mapid(map_name)) == -1 ) {
-		ShowError("buildin_instance_set_respawn: unknown map '%s'\n",map_name);
+	else if ((mid = script->mapname2mapid(st, map_name)) == -1) {
 		script_pushint(st, 0);
+		return false;
 	} else {
 		int i;
 
