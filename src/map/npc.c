@@ -969,6 +969,9 @@ int npc_touch_areanpc(struct map_session_data* sd, int16 m, int16 x, int16 y)
 		return 1;
 #endif // 0
 
+	if (sd->block_action.npcclick)
+		return 1;
+
 	for(i=0;i<map->list[m].npc_num;i++) {
 		if (map->list[m].npc[i]->option&OPTION_INVISIBLE) {
 			f=0; // a npc was found, but it is disabled; don't print warning
@@ -1049,6 +1052,9 @@ int npc_untouch_areanpc(struct map_session_data* sd, int16 m, int16 x, int16 y)
 	struct npc_data *nd = NULL;
 	nullpo_retr(1, sd);
 	Assert_retr(1, m >= 0 && m < map->count);
+
+	if (sd->block_action.npcclick)
+		return 1;
 
 	if (!sd->areanpc_id)
 		return 0;
@@ -1272,6 +1278,9 @@ void run_tomb(struct map_session_data* sd, struct npc_data* nd) {
 int npc_click(struct map_session_data* sd, struct npc_data* nd)
 {
 	nullpo_retr(1, sd);
+
+	if (sd->block_action.npcclick)
+		return 1;
 
 	// This usually happens when the player clicked on a NPC that has the view id
 	// of a mob, to activate this kind of npc it's needed to be in a 2,2 range

@@ -628,6 +628,7 @@ END_ZEROED_BLOCK;
 		unsigned immune   : 1;
 		unsigned sitstand : 1;
 		unsigned commands : 1;
+		unsigned npcclick : 1;
 	} block_action;
 };
 

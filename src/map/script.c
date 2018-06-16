@@ -18165,6 +18165,9 @@ BUILDIN(setpcblock)
 	if ((type & PCBLOCK_COMMANDS) != 0)
 		sd->block_action.commands = state;
 
+	if ((type & PCBLOCK_NPCCLICK) != 0)
+		sd->block_action.npcclick = state;
+
 	return true;
 }
 
@@ -18201,6 +18204,9 @@ BUILDIN(checkpcblock)
 
 	if (sd->block_action.commands != 0)
 		retval |= PCBLOCK_COMMANDS;
+
+	if (sd->block_action.npcclick != 0)
+		retval |= PCBLOCK_NPCCLICK;
 
 	script_pushint(st, retval);
 	return true;
@@ -25276,6 +25282,7 @@ void script_hardcoded_constants(void)
 	script->set_constant("PCBLOCK_IMMUNE",   PCBLOCK_IMMUNE,   false, false);
 	script->set_constant("PCBLOCK_SITSTAND", PCBLOCK_SITSTAND, false, false);
 	script->set_constant("PCBLOCK_COMMANDS", PCBLOCK_COMMANDS, false, false);
+	script->set_constant("PCBLOCK_NPCCLICK", PCBLOCK_NPCCLICK, false, false);
 
 	script->constdb_comment("private airship responds");
 	script->set_constant("P_AIRSHIP_NONE", P_AIRSHIP_NONE, false, false);
